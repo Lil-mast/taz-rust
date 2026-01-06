@@ -1,6 +1,10 @@
 [package]
 name = "auramesh-mesh"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
+libp2p = { version = "0.53", features = ["tcp", "noise", "yamux", "dns", "tokio"] }
+tokio.workspace = true
+anyhow.workspace = true
+log.workspace = true

@@ -1,16 +1,13 @@
-[package]
-name = "taz-rust"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
 [workspace]
+name = "taz-rust"
 members = [
     "auramesh-core",
     "auramesh-cli",
     "auramesh-agents",
     "auramesh-mesh",
 ]
+
+resolver = "3"
 
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
