@@ -29,5 +29,5 @@ impl Default for Config {
 pub fn load_config(path: &str) -> Result<Config> {
     info!("Loading config from {}", path);
     // Stub: In real impl, read from JSON. MCP could extend to dynamic context loading.
-    Ok(Config::default()).context("Failed to load config")
+    Ok::<Config, anyhow::Error>(Config::default()).context("Failed to load config")
 }

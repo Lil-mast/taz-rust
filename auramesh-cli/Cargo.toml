@@ -12,3 +12,6 @@ env_logger.workspace = true
 auramesh-core = { path = "../auramesh-core" }
 auramesh-agents = { path = "../auramesh-agents" }
 auramesh-mesh = { path = "../auramesh-mesh" }
+cpal = "0.15"
+whisper-rs = "0.10"
+hound = "3.5"

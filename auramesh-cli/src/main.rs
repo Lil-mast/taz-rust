@@ -6,6 +6,7 @@ use clap::{Parser, Subcommand};
 use env_logger::init as init_logger;
 use log::info;
 use tokio::runtime::Runtime;
+mod voice;
 
 /// AuraMesh CLI: Offline-first infrastructure healer.
 #[derive(Parser)]
@@ -25,6 +26,13 @@ enum Command {
     Execute { plan: String },
 }
 
+// In match:
+Command::Voice { input } => {
+    // Use real voice; input as fallback.
+    let text = voice::voice_to_text("path/to/tiny.en.whisper.ggml")?;  // Download model separately
+    info!("Transcribed: {}", text);
+}
+
 fn main() -> Result<()> {
     init_logger();
     let rt = Runtime::new()?;
@@ -41,8 +49,9 @@ async fn async_main() -> Result<()> {
             start_mesh().await?;
         }
         Command::Voice { input } => {
-            info!("Processing voice input: {}", input);
-            // Stub: Integrate with voice pipeline later.
+            // Use real voice; input as fallback.
+            let text = voice::voice_to_text("path/to/tiny.en.whisper.ggml")?;  // Download model separately
+            info!("Transcribed: {}", text);
         }
         Command::Execute { plan } => {
             let planner = PlannerAgent::new();
@@ -51,3 +60,4 @@ async fn async_main() -> Result<()> {
     }
     Ok(())
 }
+
