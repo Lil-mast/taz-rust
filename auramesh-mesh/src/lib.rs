@@ -1,7 +1,8 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use libp2p::{
-    identity, mdns::{Mdns, MdnsConfig}, noise, swarm::{Swarm, SwarmBuilder}, tcp, yamux, Multiaddr, PeerId, Transport
+    identity, noise, tcp, yamux, Multiaddr, PeerId, Transport, swarm::Swarm
 };
+use libp2p::futures::StreamExt;
 use log::info;
 use tokio::select;
 
@@ -13,17 +14,12 @@ pub async fn start_mesh() -> Result<()> {
 
     let transport = tcp::tokio::Transport::new(tcp::Config::default())
         .upgrade(libp2p::core::upgrade::Version::V1)
-        .authenticate(noise::Config::new(&id_keys).context("Noise config failed")?)
+        .authenticate(noise::Config::new(&id_keys).map_err(|e| anyhow::anyhow!("Noise config failed: {}", e))?)
         .multiplex(yamux::Config::default())
         .boxed();
 
-    let behaviour = Mdns::new(MdnsConfig::default()).await?;
-
-    let mut swarm = SwarmBuilder::with_existing_identity(id_keys)
-        .with_tokio()
-        .with_other_transport(transport)?
-        .with_behaviour(|_| behaviour)?
-        .build()?;
+    // Create a simple swarm with a dummy behaviour
+    let mut swarm = Swarm::new(transport, libp2p::swarm::dummy::Behaviour, peer_id, libp2p::swarm::Config::with_tokio_executor());
 
     swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse::<Multiaddr>()?)?;
 

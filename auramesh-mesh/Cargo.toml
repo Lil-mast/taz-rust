@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-libp2p = { version = "0.53", features = ["tcp", "noise", "yamux", "dns", "tokio"] }
+libp2p = { version = "0.53", features = ["tcp", "noise", "yamux", "dns", "tokio", "mdns"] }
 tokio.workspace = true
 anyhow.workspace = true
 log.workspace = true

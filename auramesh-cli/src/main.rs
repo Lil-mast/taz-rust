@@ -1,6 +1,6 @@
 use anyhow::Result;
 use auramesh_agents::agents::PlannerAgent;
-use auramesh_core::{load_config, Config};
+use auramesh_core::load_config;
 use auramesh_mesh::start_mesh;
 use clap::{Parser, Subcommand};
 use env_logger::init as init_logger;
@@ -26,13 +26,6 @@ enum Command {
     Execute { plan: String },
 }
 
-// In match:
-Command::Voice { input } => {
-    // Use real voice; input as fallback.
-    let text = voice::voice_to_text("path/to/tiny.en.whisper.ggml")?;  // Download model separately
-    info!("Transcribed: {}", text);
-}
-
 fn main() -> Result<()> {
     init_logger();
     let rt = Runtime::new()?;
@@ -48,14 +41,22 @@ async fn async_main() -> Result<()> {
         Command::StartMesh => {
             start_mesh().await?;
         }
-        Command::Voice { input } => {
+        Command::Voice { input: _ } => {
             // Use real voice; input as fallback.
-            let text = voice::voice_to_text("path/to/tiny.en.whisper.ggml")?;  // Download model separately
-            info!("Transcribed: {}", text);
+            match voice::voice_to_text("path/to/tiny.en.whisper.ggml") {
+                Ok(text) => {
+                    println!("Transcribed: {}", text);
+                }
+                Err(e) => {
+                    eprintln!("Voice command failed: {}", e);
+                    eprintln!("Note: You need to download a Whisper model file (e.g., tiny.en.whisper.ggml)");
+                }
+            }
         }
         Command::Execute { plan } => {
             let planner = PlannerAgent::new();
-            planner.plan(&plan)?;
+            let result = planner.plan(&plan)?;
+            println!("Generated Plan: {}", result);
         }
     }
     Ok(())

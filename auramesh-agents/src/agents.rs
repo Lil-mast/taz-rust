@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use log::info;
 
 // Trait for all agents, inspired by MCP: Standardized execute with context.
@@ -24,7 +24,7 @@ impl PlannerAgent {
         } else {
             r#"{"steps": [{"action": "check_status", "deps": []}]}"#.to_string()
         };
-        Ok(dag).context("Planning failed")
+        Ok(dag)
     }
 }
 

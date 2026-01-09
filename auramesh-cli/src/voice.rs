@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
-use cpal::{traits::{DeviceTrait, HostTrait, StreamTrait}, SampleFormat, SupportedStreamConfig};
+use cpal::{traits::{DeviceTrait, HostTrait, StreamTrait}, SampleFormat};
 use log::{error, info};
 use std::sync::{Arc, Mutex};
-use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperState};
+use whisper_rs::{FullParams, SamplingStrategy, WhisperContext};
 
 // VAD: RMS threshold. Optimize for edge: Low compute.
 fn is_voice_active(samples: &[f32], threshold: f32) -> bool {
@@ -44,7 +44,7 @@ pub fn voice_to_text(model_path: &str) -> Result<String> {
         return Ok("No voice detected".to_string());
     }
 
-    let ctx = WhisperContext::new(model_path).context("Whisper load failed")?;
+    let ctx = WhisperContext::new_with_params(model_path, Default::default()).context("Whisper load failed")?;
     let mut state = ctx.create_state()?;
     let mut params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
     params.set_language(Some("en"));
