@@ -1,5 +1,6 @@
 use anyhow::Result;
-use auramesh_agents::agents::PlannerAgent;
+use auramesh_agents::{PlannerAgent, InfraAgent};
+use auramesh_agents::agents::Agent;
 use auramesh_core::load_config;
 use auramesh_mesh::start_mesh;
 use clap::{Parser, Subcommand};
@@ -34,7 +35,7 @@ fn main() -> Result<()> {
 
 async fn async_main() -> Result<()> {
     let cli = Cli::parse();
-    let config = load_config("config.json")?;
+    let config = load_config()?;
     info!("Starting AuraMesh in offline mode: {}", config.offline_mode);
 
     match cli.command {
@@ -55,10 +56,14 @@ async fn async_main() -> Result<()> {
         }
         Command::Execute { plan } => {
             let planner = PlannerAgent::new();
-            let result = planner.plan(&plan)?;
-            println!("Generated Plan: {}", result);
+            let dag = planner.plan(&plan)?;
+            println!("Generated Plan: {}", dag);
+            
+            let infra = InfraAgent::new();
+            let result = infra.execute(&dag, "")?;
+            println!("Execution result: {}", result);
         }
     }
+
     Ok(())
 }
-

@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use log::info;
 use serde::{Deserialize, Serialize};
 
@@ -26,8 +26,8 @@ impl Default for Config {
 /// Load config from file or defaults.
 /// Offline-first: No network calls, per MCP local resilience.
 
-pub fn load_config(path: &str) -> Result<Config> {
-    info!("Loading config from {}", path);
+pub fn load_config() -> Result<Config> {
+    info!("Loading config with default values");
     // Stub: In real impl, read from JSON. MCP could extend to dynamic context loading.
-    Ok::<Config, anyhow::Error>(Config::default()).context("Failed to load config")
+    Ok(Config::default())
 }
